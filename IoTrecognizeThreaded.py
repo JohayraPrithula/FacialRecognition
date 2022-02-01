@@ -25,6 +25,12 @@ import argparse
 import torch
 from threading import Thread 
 
+#pqt5 Imports
+import sys
+from PyQt5 import QtCore, QtGui, QtWidgets
+from PyQt5.QtGui import * 
+from PyQt5.QtCore import * 
+from PyQt5.QtWidgets import * 
 
 # we save 'RetinaFace' model at 'models/retinaface'
 # we load retinaface model to detect facess
@@ -51,6 +57,183 @@ curr_name = ""
 cnt = 0
 frm = 0
 prev_name = ""
+allow =2
+
+
+
+
+
+#UI initialization
+class Ui_MainWindow(object):
+
+    def setupUi(self, MainWindow):
+        MainWindow.setObjectName("MainWindow")
+        MainWindow.resize(810, 820)
+        MainWindow.setAutoFillBackground(False)
+        MainWindow.setStyleSheet("background-color: #FFFFFF;\nborder: transparent;\n")
+        self.centralwidget = QtWidgets.QWidget(MainWindow)
+        self.centralwidget.setObjectName("centralwidget")
+        self.vidwidget = QtWidgets.QLabel(self.centralwidget)
+        self.vidwidget.setGeometry(QtCore.QRect(105, 40, 600, 450))
+        self.vidwidget.setObjectName("vidwidget")
+        self.statusLabel = QtWidgets.QLabel(self.centralwidget)
+        self.statusLabel.setGeometry(QtCore.QRect(180, 610, 450, 71))
+        self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
+        font = QtGui.QFont()
+        font.setFamily("Archivo")
+        font.setPointSize(20)
+        self.statusLabel.setFont(font)
+        self.statusLabel.setStyleSheet("background: rgba(255, 255, 255, 0.3)")
+        self.statusLabel.setObjectName("statusLabel")
+        self.prompt = QtWidgets.QLabel(self.centralwidget)
+        self.prompt.setGeometry(QtCore.QRect(65, 510, 680, 40))
+        font = QtGui.QFont()
+        font.setFamily("Archivo")
+        font.setPointSize(18)
+        self.prompt.setFont(font)
+        self.prompt.setStyleSheet("background: rgba(255, 255, 255, 0.3)")
+        self.prompt.setObjectName("prompt")
+        self.prompt.setHidden(True)
+        self.prompt.setAlignment(QtCore.Qt.AlignCenter)
+        self.allowButton = QtWidgets.QPushButton(self.centralwidget)
+        self.allowButton.setGeometry(QtCore.QRect(65, 590, 300, 120))
+        font = QtGui.QFont()
+        font.setFamily("Archivo")
+        font.setPointSize(20)
+        self.allowButton.setFont(font)
+        self.allowButton.setStyleSheet("QPushButton {background-color: #D0E2FF;}"
+                                       "QPushButton:pressed {background-color: #D0E2FF;}"
+                                       "QPushButton:hover {background-color:  #A1C5FF;}")
+        self.allowButton.setAutoDefault(False)
+        self.allowButton.setObjectName("allowButton")
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(25)
+        self.allowButton.setGraphicsEffect(shadow)
+        self.allowButton.hide()
+        self.denyButton = QtWidgets.QPushButton(self.centralwidget)
+        self.denyButton.setGeometry(QtCore.QRect(470, 590, 300, 120))
+        font = QtGui.QFont()
+        font.setFamily("Archivo")
+        font.setPointSize(20)
+        self.denyButton.setFont(font)
+        self.denyButton.setStyleSheet("QPushButton {background-color: #D0E2FF;}"
+                                      "QPushButton:pressed {background-color: #D0E2FF;}"
+                                      "QPushButton:hover {background-color:  #A1C5FF;}")
+        self.denyButton.setObjectName("denyButton")
+        shadow = QGraphicsDropShadowEffect()
+        shadow.setBlurRadius(25)
+        self.denyButton.setGraphicsEffect(shadow)
+        self.denyButton.hide()
+        self.label = QtWidgets.QLabel(self.centralwidget)
+        self.label.setGeometry(QtCore.QRect(345, 5, 160, 30))
+        font = QtGui.QFont()
+        font.setFamily("Archivo")
+        font.setPointSize(20)
+        self.label.setFont(font)
+        self.label.setObjectName("label")
+        MainWindow.setCentralWidget(self.centralwidget)
+        self.menubar = QtWidgets.QMenuBar(MainWindow)
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 810, 21))
+        self.menubar.setObjectName("menubar")
+        self.menuFILE = QtWidgets.QMenu(self.menubar)
+        self.menuFILE.setObjectName("menuFILE")
+        self.menuCredits = QtWidgets.QMenu(self.menubar)
+        self.menuCredits.setObjectName("menuCredits")
+        MainWindow.setMenuBar(self.menubar)
+        self.statusbar = QtWidgets.QStatusBar(MainWindow)
+        self.statusbar.setObjectName("statusbar")
+        MainWindow.setStatusBar(self.statusbar)
+        self.actionStart = QtWidgets.QAction(MainWindow)
+        self.actionStart.setObjectName("actionStart")
+        self.actionexit = QtWidgets.QAction(MainWindow)
+        self.actionexit.setObjectName("actionexit")
+        self.menuFILE.addAction(self.actionStart)
+        self.menuFILE.addAction(self.actionexit)
+        self.menubar.addAction(self.menuFILE.menuAction())
+        self.menubar.addAction(self.menuCredits.menuAction())
+        
+        
+
+        self.retranslateUi(MainWindow)
+        QtCore.QMetaObject.connectSlotsByName(MainWindow)
+
+    def retranslateUi(self, MainWindow):
+        _translate = QtCore.QCoreApplication.translate
+        MainWindow.setWindowTitle(_translate("MainWindow", "Smart Lock Security System"))
+        self.statusLabel.setText(_translate("MainWindow", "The system is idle"))
+        self.label.setText(_translate("MainWindow", "Live Feed"))
+        self.prompt.setText(_translate("MainWindow", "This person is not authorized. Give permission to open the door."))
+        self.allowButton.setText(_translate("MainWindow", "ALLOW"))
+        self.denyButton.setText(_translate("MainWindow", "DENY"))
+        self.menuFILE.setTitle(_translate("MainWindow", "File"))
+        self.menuCredits.setTitle(_translate("MainWindow", "Credits"))
+        self.actionStart.setText(_translate("MainWindow", "Start"))
+        self.actionexit.setText(_translate("MainWindow", "Exit"))
+
+    def detecting(self):
+        self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
+        self.statusLabel.setText("Detecting.....")
+
+    def detected(self, command):
+        if command == 1:
+            self.statusLabel.setHidden(False)
+            self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
+            self.statusLabel.setText("Authorized. Door opening.")
+            loop2 = QEventLoop()
+            QTimer.singleShot(2000, loop2.quit)
+            loop2.exec_()
+            self.statusLabel.setText("The system is IDLE")
+
+        if command == 0:
+            self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
+            self.statusLabel.setText("Not Authorized. Access denied.")
+            loop3 = QEventLoop()
+            QTimer.singleShot(2000, loop3.quit)
+            loop3.exec_()
+            self.statusLabel.setText("The system is IDLE")
+
+    def promptToUser(self):
+        self.statusLabel.setHidden(True)
+        self.prompt.setHidden(False)
+        self.denyButton.show()
+        self.allowButton.show()
+        self.allow = self.allowButton.clicked.connect(self.allowButtonClicked)
+        self.allow = self.denyButton.clicked.connect(self.denyButtonClicked)
+        return self.allow
+
+    def allowButtonClicked(self):
+        global allow
+        allow = 1
+        self.statusLabel.setHidden(False)
+        self.prompt.setHidden(True)
+        self.denyButton.hide()
+        self.allowButton.hide()
+        self.detected(1)
+
+    def denyButtonClicked(self):
+        global allow
+        allow = 0
+        self.statusLabel.setHidden(False)
+        self.prompt.setHidden(True)
+        self.denyButton.hide()
+        self.allowButton.hide()
+        self.detected(0)
+
+    def updateImage(self, cv_img):
+        qtimg = self.convert_cv_qt(cv_img)
+        self.vidwidget.setPixmap(qtimg)
+        
+    def convert_cv_qt(self, cv_img):
+        rgb_image = cv2.cvtColor(cv_img, cv2.COLOR_BGR2RGB)
+        h, w, ch = rgb_image.shape
+        bytes_per_line = ch * w
+        convert_to_Qt_format = QtGui.QImage(rgb_image.data, w, h, bytes_per_line, QtGui.QImage.Format_RGB888)
+        p = convert_to_Qt_format.scaled(600, 450, Qt.KeepAspectRatio)
+        return QPixmap.fromImage(p)
+
+
+
+     
 
 #server callbecks
 def on_connect(client, userdata, flags, rc):
@@ -182,6 +365,16 @@ print("Names ", names.shape)
 def distance(emb1, emb2):
     return np.sum(np.square(emb1 - emb2))
 
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()  
+    
+
 video = cv2.VideoCapture(0)
 
 
@@ -193,7 +386,8 @@ while True:
     subscribe_thread.start()
     
     if doorBell == 1:
-        while frm < 800:  
+        ui.detecting()
+        while frm < 100:  
             ret,frame = video.read()
             img = np.float32(frame)
             im_height,im_width,_ = img.shape
@@ -317,29 +511,64 @@ while True:
                     text = "{}".format(name)
                     cv2.putText(frame,text,(startX,startY - 5),cv2.FONT_HERSHEY_SIMPLEX,0.5,color,2)
             
-            if curr_name == "NONE":
+            if curr_name == "NONE" :
+                cnt = 0
+                prev_name = ""
+            if curr_name == "":
                 cnt = 0
                 prev_name = ""
             elif curr_name == prev_name:
-                cnt += 1
-                prev_name = curr_name
-                if cnt >= 50:
-                    print("Publishing")
-                    client.publish("openCommand","1")
-                    doorBell = 0
-                    time.sleep(1)
-                    break
+                if curr_name != "":
+                    cnt += 1
+                    prev_name = curr_name
+                    if cnt >= 50:
+                        print("Publishing1")
+                        client.publish("openCommand","1")
+                        doorBell = 0
+                        time.sleep(1)
+                        
+                        ui.detected(1)
+                        print(curr_name)
+                        cnt = 0
+                        break
             else:
                 cnt = 0
                 prev_name = curr_name
             
+            doorBell = 0
             frm +=1
-            cv2.imshow("Capture",frame)
+            ui.updateImage(frame)
+            #cv2.imshow("Capture",frame)
             key = cv2.waitKey(2)
             if key == ord('q'):
                 break
-    
-    cv2.imshow("Capture",frame) 
+
+        if frm == 100:
+
+            doorBell = 0
+            ui.promptToUser()
+            
+            while (allow == 2):
+                ret,frame = video.read()
+                ui.updateImage(frame)
+                #cv2.imshow("Capture",frame) 
+                key = cv2.waitKey(2)
+                if key == ord('q'):
+                    break
+            
+            if allow == 1:
+                print("Publishing2")
+                client.publish("openCommand","1")
+                time.sleep(1)
+                allow = 2
+            if allow == 0:
+                print("Denied")
+                allow = 2
+
+    doorBell = 0
+
+    ui.updateImage(frame)
+    #cv2.imshow("Capture",frame) 
     key = cv2.waitKey(2)
     if key == ord('q'):
         break
@@ -353,7 +582,10 @@ while True:
 
 
 video.release()
-cv2.destroyAllWindows()
+sys.exit(app.exec_()) 
+
+
+#cv2.destroyAllWindows()
 
 
                
