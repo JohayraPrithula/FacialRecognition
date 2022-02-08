@@ -71,6 +71,7 @@ class Ui_MainWindow(object):
         MainWindow.resize(810, 820)
         MainWindow.setAutoFillBackground(False)
         MainWindow.setStyleSheet("background-color: #FFFFFF;\nborder: transparent;\n")
+        MainWindow.setWindowIcon(QtGui.QIcon("SmartLock.png"))
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.vidwidget = QtWidgets.QLabel(self.centralwidget)
@@ -160,7 +161,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Smart Lock Security System"))
-        self.statusLabel.setText(_translate("MainWindow", "The system is idle"))
+        self.statusLabel.setText(_translate("MainWindow", "The system is in standby mode"))
         self.label.setText(_translate("MainWindow", "Live Feed"))
         self.prompt.setText(_translate("MainWindow", "This person is not authorized. Give permission to open the door."))
         self.allowButton.setText(_translate("MainWindow", "ALLOW"))
@@ -182,7 +183,7 @@ class Ui_MainWindow(object):
             loop2 = QEventLoop()
             QTimer.singleShot(2000, loop2.quit)
             loop2.exec_()
-            self.statusLabel.setText("The system is IDLE")
+            self.statusLabel.setText("The system is in standby mode")
 
         if command == 0:
             self.statusLabel.setAlignment(QtCore.Qt.AlignCenter)
@@ -190,7 +191,7 @@ class Ui_MainWindow(object):
             loop3 = QEventLoop()
             QTimer.singleShot(2000, loop3.quit)
             loop3.exec_()
-            self.statusLabel.setText("The system is IDLE")
+            self.statusLabel.setText("The system is in standby mode")
 
     def promptToUser(self):
         self.statusLabel.setHidden(True)
@@ -253,13 +254,14 @@ def on_message(client, userdata, message):
     if rcv == "1":
         doorBell = 1
     print("Doorbell: ", rcv)
-client= paho.Client("recognizerClient")
+
 
 def subscribe_func():
     client.subscribe("DoorBell1")#subscribe
     time.sleep(1)
 
 #Bind function to callback
+client= paho.Client("recognizerClient")
 client.on_message=on_message
 client.on_connect=on_connect
 client.on_disconnect=on_disconnect

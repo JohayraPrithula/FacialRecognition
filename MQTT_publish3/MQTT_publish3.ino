@@ -2,12 +2,22 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
 
-// Update these with values suitable for your network.
+// // Update these with values suitable for the network.alues suitable for the network.
 
 const char* ssid = "Urbita";
 const char* password = "19p16u14n";
 const char* mqtt_server = "broker.mqttdashboard.com";
 
+// Values suitable for the motor.
+
+#define STEPPER_PIN_1 D5
+#define STEPPER_PIN_2 D6
+#define STEPPER_PIN_3 D7
+#define STEPPER_PIN_4 D8
+int step_number = 0;
+
+
+// Values suitable for the door.
 int doorState = 0;
 int b1 = 0;
 int b2 = 0;
@@ -81,6 +91,10 @@ void setup()
   Serial.begin(115200);
   pinMode(D3,INPUT_PULLUP);
   pinMode(D4,INPUT_PULLUP);
+  pinMode(STEPPER_PIN_1, OUTPUT);
+  pinMode(STEPPER_PIN_2, OUTPUT);
+  pinMode(STEPPER_PIN_3, OUTPUT);
+  pinMode(STEPPER_PIN_4, OUTPUT);
   setup_wifi();
   client.setServer(mqtt_server, 1883);
   client.setCallback(callback);
@@ -165,9 +179,90 @@ int stateToggle(int prev)
 void doorOpen()
 {
   Serial.print("Door Opening");
+  for (int a = 0; a<750; a++)
+  {
+    switch(step_number)
+    {
+      case 0:
+      digitalWrite(STEPPER_PIN_1, HIGH);
+      digitalWrite(STEPPER_PIN_2, LOW);
+      digitalWrite(STEPPER_PIN_3, LOW);
+      digitalWrite(STEPPER_PIN_4, LOW);
+      break;
+      case 1:
+      digitalWrite(STEPPER_PIN_1, LOW);
+      digitalWrite(STEPPER_PIN_2, HIGH);
+      digitalWrite(STEPPER_PIN_3, LOW);
+      digitalWrite(STEPPER_PIN_4, LOW);
+      break;
+      case 2:
+      digitalWrite(STEPPER_PIN_1, LOW);
+      digitalWrite(STEPPER_PIN_2, LOW);
+      digitalWrite(STEPPER_PIN_3, HIGH);
+      digitalWrite(STEPPER_PIN_4, LOW);
+      break;
+      case 3:
+      digitalWrite(STEPPER_PIN_1, LOW);
+      digitalWrite(STEPPER_PIN_2, LOW);
+      digitalWrite(STEPPER_PIN_3, LOW);
+      digitalWrite(STEPPER_PIN_4, HIGH);
+      break;
+    } 
+    step_number++;
+    if(step_number > 3)
+    {
+      step_number = 0;
+    }
+    delay(5);
+  }
+  step_number = 0;
+  digitalWrite(STEPPER_PIN_1, LOW);
+  digitalWrite(STEPPER_PIN_2, LOW);
+  digitalWrite(STEPPER_PIN_3, LOW);
+  digitalWrite(STEPPER_PIN_4, LOW);
 }
 
 void doorClose()
 {
   Serial.print("Door Closing");
+  for (int a = 0; a<750; a++)
+  {
+    switch(step_number)
+    {
+      case 0:
+      digitalWrite(STEPPER_PIN_1, LOW);
+      digitalWrite(STEPPER_PIN_2, LOW);
+      digitalWrite(STEPPER_PIN_3, LOW);
+      digitalWrite(STEPPER_PIN_4, HIGH);
+      break;
+      case 1:
+      digitalWrite(STEPPER_PIN_1, LOW);
+      digitalWrite(STEPPER_PIN_2, LOW);
+      digitalWrite(STEPPER_PIN_3, HIGH);
+      digitalWrite(STEPPER_PIN_4, LOW);
+      break;
+      case 2:
+      digitalWrite(STEPPER_PIN_1, LOW);
+      digitalWrite(STEPPER_PIN_2, HIGH);
+      digitalWrite(STEPPER_PIN_3, LOW);
+      digitalWrite(STEPPER_PIN_4, LOW);
+      break;
+      case 3:
+      digitalWrite(STEPPER_PIN_1, HIGH);
+      digitalWrite(STEPPER_PIN_2, LOW);
+      digitalWrite(STEPPER_PIN_3, LOW);
+      digitalWrite(STEPPER_PIN_4, LOW);
+    } 
+    step_number++;
+    if(step_number > 3)
+    {
+      step_number = 0;
+    }
+    delay(5);
+  } 
+  step_number = 0;
+  digitalWrite(STEPPER_PIN_1, LOW);
+  digitalWrite(STEPPER_PIN_2, LOW);
+  digitalWrite(STEPPER_PIN_3, LOW);
+  digitalWrite(STEPPER_PIN_4, LOW);
 }
