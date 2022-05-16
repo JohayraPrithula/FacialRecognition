@@ -1,5 +1,5 @@
 # IOT INTEGRATED SMART HOME SECURITY SYSTEM BASED ON FACIAL RECOGNITION USING TRANSFER LEARNING METHOD
-
+This repo uses RetinaFace for the detection, FaceNet model for extraction of features and both k-Nearest Neighbor (kNN) and Support Vector Machine (SVM) methods for classification. Accuracy of detection for both cases has been above 96%. The hardware of the lock is constructed using a stepper motor, driver and 3D printed lock components modeled using SOLIDWORKS. NodeMCU and MQTT are used to interconnect the hardware to the internet, making it an IoT device. To make the system accessible to the general public, I built a simple and convenient user interface using PyQt5. The entirety of this system is able to automatically detect visitors and open a door within 7 seconds.
 ## Live Demo:
 
 ![alt text](https://github.com/JohayraPrithula/FacialRecognition/blob/ImplementingUI/authorized.gif?raw=true)
