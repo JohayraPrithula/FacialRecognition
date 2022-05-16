@@ -1,6 +1,9 @@
 # IOT INTEGRATED SMART HOME SECURITY SYSTEM BASED ON FACIAL RECOGNITION USING TRANSFER LEARNING METHOD
 
+## Live Demo:
 
+![alt text](https://github.com/JohayraPrithula/FacialRecognition/blob/ImplementingUI/authorized.gif?raw=true)
+![alt text](https://github.com/JohayraPrithula/FacialRecognition/blob/ImplementingUI/unauthorized.gif?raw=true)
 
 
 ## Complete Algorithm 
