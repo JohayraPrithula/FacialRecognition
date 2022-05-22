@@ -48,7 +48,7 @@ tsneGraph:
 ![alt text](https://github.com/JohayraPrithula/FacialRecognition/blob/ImplementingUI/Picture2.jpg?raw=true)
 ![](https://github.com/JohayraPrithula/FacialRecognition/blob/ImplementingUI/Picture3.png?raw=true)
 
-## MQT T Implementation
+## MQTT Implementation
 Modify MQTT_publish3.ino according to the network ip and password
 
 ## User Interface
